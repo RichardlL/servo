@@ -22,17 +22,18 @@ pub struct CSSErrorReporter {
 
 impl ParseErrorReporter for CSSErrorReporter {
      fn report_error(&self, input: &mut Parser, position: SourcePosition, message: &str) {
-         let location = input.source_location(position);
          if log_enabled!(log::LogLevel::Info) {
+             let location = input.source_location(position);
              info!("{}:{} {}", location.line, location.column, message)
-         }
+             
          //TODO: report a real filename
-         let _ = self.script_chan.lock().unwrap().send(
-             ConstellationControlMsg::ReportCSSError(self.pipelineid,
-                                                     "".to_owned(),
-                                                     location.line,
-                                                     location.column,
-                                                     message.to_owned()));
+             let _ = self.script_chan.lock().unwrap().send(
+                 ConstellationControlMsg::ReportCSSError(self.pipelineid,
+                                                         "".to_owned(),
+                                                         location.line,
+                                                         location.column,
+                                                         message.to_owned()));
+         }
      }
 
      fn clone(&self) -> Box<ParseErrorReporter + Send + Sync> {
